@@ -462,6 +462,7 @@ T_DjiReturnCode
 c_gps_position_callback(const uint8_t *data, uint16_t data_size,
                         const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->gps_position_callback(data, data_size,
@@ -573,6 +574,7 @@ T_DjiReturnCode
 c_rc_callback(const uint8_t *data, uint16_t data_size,
               const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->rc_callback(data, data_size, timestamp);
@@ -582,6 +584,7 @@ T_DjiReturnCode
 c_esc_callback(const uint8_t *data, uint16_t data_size,
                const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->esc_callback(data, data_size, timestamp);
@@ -591,6 +594,7 @@ T_DjiReturnCode
 c_rc_connection_status_callback(const uint8_t *data, uint16_t data_size,
                                 const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->rc_connection_status_callback(data, data_size,
@@ -601,6 +605,7 @@ T_DjiReturnCode
 c_gimbal_angles_callback(const uint8_t *data, uint16_t data_size,
                          const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->gimbal_angles_callback(data, data_size,
@@ -611,6 +616,7 @@ T_DjiReturnCode
 c_gimbal_status_callback(const uint8_t *data, uint16_t data_size,
                          const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->gimbal_status_callback(data, data_size,
@@ -621,6 +627,7 @@ T_DjiReturnCode
 c_flight_status_callback(const uint8_t *data, uint16_t data_size,
                          const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->flight_status_callback(data, data_size,
@@ -631,12 +638,12 @@ T_DjiReturnCode
 c_display_mode_callback(const uint8_t *data, uint16_t data_size,
                         const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->display_mode_callback(data, data_size,
                                                       timestamp);
 }
-
 T_DjiReturnCode
 c_landing_gear_status_callback(const uint8_t *data, uint16_t data_size,
                                const T_DjiDataTimestamp *timestamp)
@@ -671,6 +678,7 @@ T_DjiReturnCode
 c_battery_callback(const uint8_t *data, uint16_t data_size,
                    const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->battery_callback(data, data_size, timestamp);
@@ -689,6 +697,7 @@ T_DjiReturnCode
 c_control_mode_callback(const uint8_t *data, uint16_t data_size,
                         const T_DjiDataTimestamp *timestamp)
 {
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->control_mode_callback(data, data_size,
@@ -2087,19 +2096,27 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.gps_data_frequency > 0)
-  {
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_GPS_POSITION,
-        get_frequency(params_.gps_data_frequency), c_gps_position_callback);
+  // Log initial subscription parameters
+  RCLCPP_INFO(get_logger(), "Starting telemetry subscriptions with frequencies: "
+              "GPS=%d Hz, FlightStatus=%d Hz, Battery=%d Hz, ControlInfo=%d Hz",
+              params_.gps_data_frequency, params_.flight_status_frequency,
+              params_.battery_level_frequency, params_.control_information_frequency);
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_GPS_POSITION, error %ld",
-                   return_code);
-    }
+  // GPS Position Subscription
+  if (params_.gps_data_frequency > 0) 
+  {
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to GPS_POSITION at %d Hz",
+                  params_.gps_data_frequency);
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_GPS_POSITION,
+          get_frequency(params_.gps_data_frequency), c_gps_position_callback);
+
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to GPS_POSITION");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to GPS_POSITION, error %ld",
+                      return_code);
+      }
 
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_GPS_VELOCITY,
@@ -2306,191 +2323,207 @@ TelemetryModule::subscribe_psdk_topics()
                    return_code);
     }
   }
+ 
+  // Flight Status Subscriptions
+  if (params_.flight_status_frequency > 0) {
+      RCLCPP_INFO(get_logger(), "Subscribing to flight status topics at %d Hz",
+                  params_.flight_status_frequency);
 
-  if (params_.flight_status_frequency > 0)
-  {
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_STATUS_FLIGHT,
-        get_frequency(params_.flight_status_frequency),
-        c_flight_status_callback);
+      // STATUS_FLIGHT
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_FLIGHT");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_STATUS_FLIGHT,
+          get_frequency(params_.flight_status_frequency),
+          c_flight_status_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_FLIGHT");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_FLIGHT, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_FLIGHT, error %ld",
-                   return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE,
-        get_frequency(params_.flight_status_frequency),
-        c_display_mode_callback);
+      // STATUS_DISPLAYMODE
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_DISPLAYMODE");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE,
+          get_frequency(params_.flight_status_frequency),
+          c_display_mode_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_DISPLAYMODE");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_DISPLAYMODE, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE, error %ld",
-                   return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR,
-        get_frequency(params_.flight_status_frequency),
-        c_landing_gear_status_callback);
+      // STATUS_LANDINGGEAR
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_LANDINGGEAR");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR,
+          get_frequency(params_.flight_status_frequency),
+          c_landing_gear_status_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_LANDINGGEAR");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_LANDINGGEAR, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR, error %ld",
-                   return_code);
-    }
+      // STATUS_MOTOR_START_ERROR
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_MOTOR_START_ERROR");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_STATUS_MOTOR_START_ERROR,
+          get_frequency(params_.flight_status_frequency),
+          c_motor_start_error_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_MOTOR_START_ERROR");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_MOTOR_START_ERROR, error %ld",
+                      return_code);
+      }
 
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_STATUS_MOTOR_START_ERROR,
-        get_frequency(params_.flight_status_frequency),
-        c_motor_start_error_callback);
-
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(
-          get_logger(),
-          "Could not subscribe successfully to topic "
-          "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_MOTOR_START_ERROR, error %ld",
-          return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_FLIGHT_ANOMALY,
-        get_frequency(params_.flight_status_frequency),
-        c_flight_anomaly_callback);
-
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_FLIGHT_ANOMALY, error %ld",
-                   return_code);
-    }
+      // FLIGHT_ANOMALY
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to FLIGHT_ANOMALY");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_FLIGHT_ANOMALY,
+          get_frequency(params_.flight_status_frequency),
+          c_flight_anomaly_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to FLIGHT_ANOMALY");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to FLIGHT_ANOMALY, error %ld",
+                      return_code);
+      }
   }
 
-  if (params_.battery_level_frequency > 0)
-  {
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_INFO,
-        get_frequency(params_.battery_level_frequency), c_battery_callback);
+  // Battery Subscriptions
+  if (params_.battery_level_frequency > 0) {
+      RCLCPP_INFO(get_logger(), "Subscribing to battery topics at %d Hz",
+                  params_.battery_level_frequency);
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_INFO, error %ld",
-                   return_code);
-      battery_info_subscription_failed_.store(true, std::memory_order_relaxed);
-    } else {
-      battery_info_subscription_failed_.store(false, std::memory_order_relaxed);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_SINGLE_INFO_INDEX1,
-        get_frequency(params_.battery_level_frequency),
-        c_single_battery_index1_callback);
+      // BATTERY_INFO
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to BATTERY_INFO");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_INFO,
+          get_frequency(params_.battery_level_frequency),
+          c_battery_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to BATTERY_INFO");
+          battery_info_subscription_failed_.store(false, std::memory_order_relaxed);
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to BATTERY_INFO, error %ld",
+                      return_code);
+          battery_info_subscription_failed_.store(true, std::memory_order_relaxed);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(
-          get_logger(),
-          "Could not subscribe successfully to topic "
-          "DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_SINGLE_INFO_INDEX1, error %ld",
-          return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_SINGLE_INFO_INDEX2,
-        get_frequency(params_.battery_level_frequency),
-        c_single_battery_index2_callback);
+      // BATTERY_SINGLE_INFO_INDEX1
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to BATTERY_SINGLE_INFO_INDEX1");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_SINGLE_INFO_INDEX1,
+          get_frequency(params_.battery_level_frequency),
+          c_single_battery_index1_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to BATTERY_SINGLE_INFO_INDEX1");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to BATTERY_SINGLE_INFO_INDEX1, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(
-          get_logger(),
-          "Could not subscribe successfully to topic "
-          "DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_SINGLE_INFO_INDEX2, error %ld",
-          return_code);
-    }
+      // BATTERY_SINGLE_INFO_INDEX2
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to BATTERY_SINGLE_INFO_INDEX2");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_BATTERY_SINGLE_INFO_INDEX2,
+          get_frequency(params_.battery_level_frequency),
+          c_single_battery_index2_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to BATTERY_SINGLE_INFO_INDEX2");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to BATTERY_SINGLE_INFO_INDEX2, error %ld",
+                      return_code);
+      }
   }
-  if (params_.control_information_frequency > 0)
-  {
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_HEIGHT_FUSION,
-        get_frequency(params_.control_information_frequency),
-        c_height_fused_callback);
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_HEIGHT_FUSION, error %ld",
-                   return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_CONTROL_DEVICE,
-        get_frequency(params_.control_information_frequency),
-        c_control_mode_callback);
+  // Control Information Subscriptions
+  if (params_.control_information_frequency > 0) {
+      RCLCPP_INFO(get_logger(), "Subscribing to control info topics at %d Hz",
+                  params_.control_information_frequency);
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_CONTROL_DEVICE, error %ld",
-                   return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_HOME_POINT_INFO,
-        get_frequency(params_.control_information_frequency),
-        c_home_point_callback);
+      // HEIGHT_FUSION
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to HEIGHT_FUSION");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_HEIGHT_FUSION,
+          get_frequency(params_.control_information_frequency),
+          c_height_fused_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to HEIGHT_FUSION");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to HEIGHT_FUSION, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_HOME_POINT_INFO, error %ld",
-                   return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_HOME_POINT_SET_STATUS,
-        get_frequency(params_.control_information_frequency),
-        c_home_point_status_callback);
+      // CONTROL_DEVICE
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to CONTROL_DEVICE");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_CONTROL_DEVICE,
+          get_frequency(params_.control_information_frequency),
+          c_control_mode_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to CONTROL_DEVICE");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to CONTROL_DEVICE, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_HOME_POINT_SET_STATUS, error %ld",
-                   return_code);
-    }
+      // HOME_POINT_INFO
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to HOME_POINT_INFO");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_HOME_POINT_INFO,
+          get_frequency(params_.control_information_frequency),
+          c_home_point_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to HOME_POINT_INFO");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to HOME_POINT_INFO, error %ld",
+                      return_code);
+      }
 
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_AVOID_DATA,
-        get_frequency(params_.control_information_frequency),
-        c_avoid_data_callback);
+      // HOME_POINT_SET_STATUS
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to HOME_POINT_SET_STATUS");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_HOME_POINT_SET_STATUS,
+          get_frequency(params_.control_information_frequency),
+          c_home_point_status_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to HOME_POINT_SET_STATUS");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to HOME_POINT_SET_STATUS, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_AVOID_DATA, error %ld",
-                   return_code);
-    }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_ALTITUDE_OF_HOMEPOINT,
-        get_frequency(params_.control_information_frequency),
-        c_home_point_altitude_callback);
+      // AVOID_DATA
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to AVOID_DATA");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_AVOID_DATA,
+          get_frequency(params_.control_information_frequency),
+          c_avoid_data_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to AVOID_DATA");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to AVOID_DATA, error %ld",
+                      return_code);
+      }
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_ALTITUDE_OF_HOMEPOINT, error %ld",
-                   return_code);
-    }
+      // ALTITUDE_OF_HOMEPOINT
+      RCLCPP_INFO(get_logger(), "Attempting to subscribe to ALTITUDE_OF_HOMEPOINT");
+      return_code = DjiFcSubscription_SubscribeTopic(
+          DJI_FC_SUBSCRIPTION_TOPIC_ALTITUDE_OF_HOMEPOINT,
+          get_frequency(params_.control_information_frequency),
+          c_home_point_altitude_callback);
+      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+          RCLCPP_INFO(get_logger(), "Successfully subscribed to ALTITUDE_OF_HOMEPOINT");
+      } else {
+          RCLCPP_ERROR(get_logger(), "Failed to subscribe to ALTITUDE_OF_HOMEPOINT, error %ld",
+                      return_code);
+      }
   }
 }  // NOLINT(readability/fn_size)
 
