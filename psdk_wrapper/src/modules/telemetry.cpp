@@ -605,7 +605,7 @@ T_DjiReturnCode
 c_gimbal_angles_callback(const uint8_t *data, uint16_t data_size,
                          const T_DjiDataTimestamp *timestamp)
 {
-  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
+  // RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->gimbal_angles_callback(data, data_size,
@@ -616,7 +616,7 @@ T_DjiReturnCode
 c_gimbal_status_callback(const uint8_t *data, uint16_t data_size,
                          const T_DjiDataTimestamp *timestamp)
 {
-  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
+  // RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
   return global_telemetry_ptr_->gimbal_status_callback(data, data_size,
