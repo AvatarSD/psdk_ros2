@@ -346,13 +346,23 @@ TelemetryModule::on_shutdown(const rclcpp_lifecycle::State &state)
   return CallbackReturn::SUCCESS;
 }
 
-T_DjiReturnCode dji_console_print(const uint8_t *data, uint16_t dataLen) {
-  if(!data) return false;
-
-  data[dataLength-1] = 0;
-  RCLCPP_WARN(get_logger(), "PSDK:  %s", data);
+static T_DjiReturnCode
+dji_console_print(const uint8_t *data, uint16_t dataLen)
+{
+  if (!data)
+  {
+    return DJI_ERROR_SYSTEM_MODULE_CODE_INVALID_PARAMETER;  // Use appropriate
+                                                            // error code
+  }
+  std::string buf(reinterpret_cast<const char *>(data), static_cast<size_t>(dataLen));
+  RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "PSDK: %s", buf.c_str());  // Changed to INFO
+  return DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS;  // Or appropriate success code
 }
-static T_DjiLoggerConsole dji_console = {DJI_LOGGER_CONSOLE_LOG_LEVEL_INFO, dji_console_print, false};
+
+static T_DjiLoggerConsole dji_console = {
+    dji_console_print,
+    DJI_LOGGER_CONSOLE_LOG_LEVEL_INFO,
+    false};
 
 bool
 TelemetryModule::init()
@@ -367,13 +377,18 @@ TelemetryModule::init()
   if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
   {
     RCLCPP_ERROR(get_logger(),
-                 "Could not initialize the telemetry module. Error code:  %ld",
+                 "Could not initialize telemetry module. Error code: %ld",
                  return_code);
     return false;
   }
 
-  DjiLogger_AddConsole(dji_console):
-
+  return_code = DjiLogger_AddConsole(&dji_console);
+  if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
+  {
+    RCLCPP_ERROR(get_logger(), "Could not add console logger. Error code: %ld",
+                 return_code);
+    return false;
+  }
   is_module_initialized_ = true;
   return true;
 }
@@ -470,12 +485,30 @@ c_gps_fused_callback(const uint8_t *data, uint16_t data_size,
 }
 
 T_DjiReturnCode
+c_display_mode_callback(const uint8_t *data,
+                        uint16_t data_size,
+                        const T_DjiDataTimestamp *timestamp);
+
+T_DjiReturnCode
 c_gps_position_callback(const uint8_t *data, uint16_t data_size,
                         const T_DjiDataTimestamp *timestamp)
 {
   RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Callback triggered: %s", __func__);
   std::unique_lock<std::shared_mutex> lock(
       global_telemetry_ptr_->global_ptr_mutex_);
+
+  T_DjiFcSubscriptionDisplaymode displaymode = 0;
+  T_DjiDataTimestamp timestamp_mode;
+  auto djiStat = DjiFcSubscription_GetLatestValueOfTopic(DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE,
+                                                (uint8_t *) &displaymode,
+                                                sizeof(T_DjiFcSubscriptionDisplaymode),
+                                                &timestamp_mode);
+  if (djiStat != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+      RCLCPP_ERROR(global_telemetry_ptr_->get_logger(), "Get last value of displaymode error");
+  } else {
+      RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Displaymode: %u", displaymode);
+      c_display_mode_callback((uint8_t *) &displaymode, 1, &timestamp_mode);
+  }
   return global_telemetry_ptr_->gps_position_callback(data, data_size,
                                                       timestamp);
 }
