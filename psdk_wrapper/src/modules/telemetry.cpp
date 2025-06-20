@@ -14,7 +14,7 @@
  * Contact: bianca@unmanned.life
  *
  */
-
+#include "dji_logger.h"
 #include "psdk_wrapper/modules/telemetry.hpp"
 namespace psdk_ros2
 {
@@ -346,6 +346,14 @@ TelemetryModule::on_shutdown(const rclcpp_lifecycle::State &state)
   return CallbackReturn::SUCCESS;
 }
 
+T_DjiReturnCode dji_console_print(const uint8_t *data, uint16_t dataLen) {
+  if(!data) return false;
+
+  data[dataLength-1] = 0;
+  RCLCPP_WARN(get_logger(), "PSDK:  %s", data);
+}
+static T_DjiLoggerConsole dji_console = {DJI_LOGGER_CONSOLE_LOG_LEVEL_INFO, dji_console_print, false};
+
 bool
 TelemetryModule::init()
 {
@@ -363,6 +371,9 @@ TelemetryModule::init()
                  return_code);
     return false;
   }
+
+  DjiLogger_AddConsole(dji_console):
+
   is_module_initialized_ = true;
   return true;
 }
