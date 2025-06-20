@@ -349,19 +349,19 @@ TelemetryModule::on_shutdown(const rclcpp_lifecycle::State &state)
 static T_DjiReturnCode
 dji_console_print(const uint8_t *data, uint16_t dataLen)
 {
-  if (!data)
+  if (!data && dataLen > 0)
   {
     return DJI_ERROR_SYSTEM_MODULE_CODE_INVALID_PARAMETER;  // Use appropriate
                                                             // error code
   }
-  std::string buf(reinterpret_cast<const char *>(data), static_cast<size_t>(dataLen));
+  std::string buf(reinterpret_cast<const char *>(data), static_cast<size_t>(dataLen - 1));
   RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "PSDK: %s", buf.c_str());  // Changed to INFO
   return DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS;  // Or appropriate success code
 }
 
 static T_DjiLoggerConsole dji_console = {
     dji_console_print,
-    DJI_LOGGER_CONSOLE_LOG_LEVEL_INFO,
+    DJI_LOGGER_CONSOLE_LOG_LEVEL_DEBUG,
     false};
 
 bool
@@ -1999,7 +1999,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.acceleration_frequency > 0)
+  if (0)//params_.acceleration_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_ACCELERATION_GROUND,
@@ -2038,7 +2038,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.velocity_frequency > 0)
+  if (0)//params_.velocity_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_VELOCITY,
@@ -2053,7 +2053,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.angular_rate_frequency > 0)
+  if (0)//params_.angular_rate_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_ANGULAR_RATE_FUSIONED,
@@ -2124,7 +2124,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.gps_fused_position_frequency > 0)
+  if (0)//params_.gps_fused_position_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_POSITION_FUSED,
@@ -2211,7 +2211,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.rtk_data_frequency > 0)
+  if (0)//params_.rtk_data_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_RTK_POSITION,
@@ -2287,7 +2287,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.magnetometer_frequency > 0)
+  if (0)//params_.magnetometer_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_COMPASS,
@@ -2302,7 +2302,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (params_.rc_channels_data_frequency > 0)
+  if (0)//params_.rc_channels_data_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_RC,
@@ -2328,7 +2328,7 @@ TelemetryModule::subscribe_psdk_topics()
                    return_code);
     }
   }
-  if (params_.esc_data_frequency > 0)
+  if (0)//params_.esc_data_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_ESC_DATA,
