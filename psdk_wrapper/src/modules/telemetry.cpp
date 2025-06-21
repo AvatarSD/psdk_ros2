@@ -1999,7 +1999,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.acceleration_frequency > 0)
+  if (params_.acceleration_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_ACCELERATION_GROUND,
@@ -2038,7 +2038,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.velocity_frequency > 0)
+  if (params_.velocity_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_VELOCITY,
@@ -2053,7 +2053,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.angular_rate_frequency > 0)
+  if (params_.angular_rate_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_ANGULAR_RATE_FUSIONED,
@@ -2124,7 +2124,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.gps_fused_position_frequency > 0)
+  if (params_.gps_fused_position_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_POSITION_FUSED,
@@ -2211,7 +2211,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.rtk_data_frequency > 0)
+  if (params_.rtk_data_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_RTK_POSITION,
@@ -2287,7 +2287,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.magnetometer_frequency > 0)
+  if (params_.magnetometer_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_COMPASS,
@@ -2302,7 +2302,7 @@ TelemetryModule::subscribe_psdk_topics()
     }
   }
 
-  if (0)//params_.rc_channels_data_frequency > 0)
+  if (params_.rc_channels_data_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_RC,
@@ -2328,7 +2328,7 @@ TelemetryModule::subscribe_psdk_topics()
                    return_code);
     }
   }
-  if (0)//params_.esc_data_frequency > 0)
+  if (params_.esc_data_frequency > 0)
   {
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_ESC_DATA,
