@@ -499,16 +499,16 @@ c_gps_position_callback(const uint8_t *data, uint16_t data_size,
 
   T_DjiFcSubscriptionDisplaymode displaymode = 0;
   T_DjiDataTimestamp timestamp_mode;
-  auto djiStat = DjiFcSubscription_GetLatestValueOfTopic(DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE,
-                                                (uint8_t *) &displaymode,
-                                                sizeof(T_DjiFcSubscriptionDisplaymode),
-                                                &timestamp_mode);
-  if (djiStat != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
-      RCLCPP_ERROR(global_telemetry_ptr_->get_logger(), "Get last value of displaymode error");
-  } else {
-      RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Displaymode: %u", displaymode);
-      c_display_mode_callback((uint8_t *) &displaymode, 1, &timestamp_mode);
-  }
+  // auto djiStat = DjiFcSubscription_GetLatestValueOfTopic(DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE,
+  //                                               (uint8_t *) &displaymode,
+  //                                               sizeof(T_DjiFcSubscriptionDisplaymode),
+  //                                               &timestamp_mode);
+  // if (djiStat != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+  //     RCLCPP_ERROR(global_telemetry_ptr_->get_logger(), "Get last value of displaymode error");
+  // } else {
+  //     RCLCPP_INFO(global_telemetry_ptr_->get_logger(), "Displaymode: %u", displaymode);
+  //     c_display_mode_callback((uint8_t *) &displaymode, 1, &timestamp_mode);
+  // }
   return global_telemetry_ptr_->gps_position_callback(data, data_size,
                                                       timestamp);
 }
