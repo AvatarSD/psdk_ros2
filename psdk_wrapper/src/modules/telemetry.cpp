@@ -2399,44 +2399,44 @@ TelemetryModule::subscribe_psdk_topics()
                       return_code);
       }
 
-      // STATUS_LANDINGGEAR
-      RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_LANDINGGEAR");
-      return_code = DjiFcSubscription_SubscribeTopic(
-          DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR,
-          get_frequency(params_.flight_status_frequency),
-          c_landing_gear_status_callback);
-      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
-          RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_LANDINGGEAR");
-      } else {
-          RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_LANDINGGEAR, error %ld",
-                      return_code);
-      }
+      // // STATUS_LANDINGGEAR
+      // RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_LANDINGGEAR");
+      // return_code = DjiFcSubscription_SubscribeTopic(
+      //     DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR,
+      //     get_frequency(params_.flight_status_frequency),
+      //     c_landing_gear_status_callback);
+      // if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+      //     RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_LANDINGGEAR");
+      // } else {
+      //     RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_LANDINGGEAR, error %ld",
+      //                 return_code);
+      // }
 
       // STATUS_MOTOR_START_ERROR
-      RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_MOTOR_START_ERROR");
-      return_code = DjiFcSubscription_SubscribeTopic(
-          DJI_FC_SUBSCRIPTION_TOPIC_STATUS_MOTOR_START_ERROR,
-          get_frequency(params_.flight_status_frequency),
-          c_motor_start_error_callback);
-      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
-          RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_MOTOR_START_ERROR");
-      } else {
-          RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_MOTOR_START_ERROR, error %ld",
-                      return_code);
-      }
+      // RCLCPP_INFO(get_logger(), "Attempting to subscribe to STATUS_MOTOR_START_ERROR");
+      // return_code = DjiFcSubscription_SubscribeTopic(
+      //     DJI_FC_SUBSCRIPTION_TOPIC_STATUS_MOTOR_START_ERROR,
+      //     get_frequency(params_.flight_status_frequency),
+      //     c_motor_start_error_callback);
+      // if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+      //     RCLCPP_INFO(get_logger(), "Successfully subscribed to STATUS_MOTOR_START_ERROR");
+      // } else {
+      //     RCLCPP_ERROR(get_logger(), "Failed to subscribe to STATUS_MOTOR_START_ERROR, error %ld",
+      //                 return_code);
+      // }
 
       // FLIGHT_ANOMALY
-      RCLCPP_INFO(get_logger(), "Attempting to subscribe to FLIGHT_ANOMALY");
-      return_code = DjiFcSubscription_SubscribeTopic(
-          DJI_FC_SUBSCRIPTION_TOPIC_FLIGHT_ANOMALY,
-          get_frequency(params_.flight_status_frequency),
-          c_flight_anomaly_callback);
-      if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
-          RCLCPP_INFO(get_logger(), "Successfully subscribed to FLIGHT_ANOMALY");
-      } else {
-          RCLCPP_ERROR(get_logger(), "Failed to subscribe to FLIGHT_ANOMALY, error %ld",
-                      return_code);
-      }
+      // RCLCPP_INFO(get_logger(), "Attempting to subscribe to FLIGHT_ANOMALY");
+      // return_code = DjiFcSubscription_SubscribeTopic(
+      //     DJI_FC_SUBSCRIPTION_TOPIC_FLIGHT_ANOMALY,
+      //     get_frequency(params_.flight_status_frequency),
+      //     c_flight_anomaly_callback);
+      // if (return_code == DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS) {
+      //     RCLCPP_INFO(get_logger(), "Successfully subscribed to FLIGHT_ANOMALY");
+      // } else {
+      //     RCLCPP_ERROR(get_logger(), "Failed to subscribe to FLIGHT_ANOMALY, error %ld",
+      //                 return_code);
+      // }
   }
 
   // Battery Subscriptions
