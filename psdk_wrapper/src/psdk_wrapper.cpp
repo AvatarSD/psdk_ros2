@@ -93,7 +93,7 @@ PSDKWrapper::PSDKWrapper(const std::string &node_name)
                 is_flight_control_module_mandatory_);
   get_parameter("mandatory_modules.camera", is_camera_module_mandatory_);
   get_parameter("mandatory_modules.gimbal", is_gimbal_module_mandatory_);
-  get_parameter("mandatory_modules.liveview", is_liveview_module_mandatory_);
+  // get_parameter("mandatory_modules.liveview", is_liveview_module_mandatory_);
   get_parameter("mandatory_modules.hms", is_hms_module_mandatory_);
   get_parameter("mandatory_modules.perception",
                 is_perception_module_mandatory_);
@@ -107,9 +107,9 @@ PSDKWrapper::PSDKWrapper(const std::string &node_name)
                 "camera_node", psdk_ros2::global_camera_ptr_);
   create_module(is_gimbal_module_mandatory_, gimbal_module_, gimbal_thread_,
                 "gimbal_node");
-  create_module(is_liveview_module_mandatory_, liveview_module_,
-                liveview_thread_, "liveview_node",
-                psdk_ros2::global_liveview_ptr_);
+  // create_module(is_liveview_module_mandatory_, liveview_module_,
+  //               liveview_thread_, "liveview_node",
+  //               psdk_ros2::global_liveview_ptr_);
   create_module(is_hms_module_mandatory_, hms_module_, hms_thread_, "hms_node",
                 psdk_ros2::global_hms_ptr_);
   create_module(is_perception_module_mandatory_, perception_module_,
@@ -225,8 +225,8 @@ PSDKWrapper::on_shutdown(const rclcpp_lifecycle::State &state)
        !camera_module_->deinit()) ||
       (is_gimbal_module_mandatory_ && gimbal_module_ &&
        !gimbal_module_->deinit()) ||
-      (is_liveview_module_mandatory_ && liveview_module_ &&
-       !liveview_module_->deinit()) ||
+      // (is_liveview_module_mandatory_ && liveview_module_ &&
+      //  !liveview_module_->deinit()) ||
       (is_hms_module_mandatory_ && hms_module_ && !hms_module_->deinit()) ||
       (is_perception_module_mandatory_ && perception_module_ &&
        !perception_module_->deinit()))
@@ -258,8 +258,8 @@ PSDKWrapper::on_shutdown(const rclcpp_lifecycle::State &state)
                           camera_thread_);
   stop_and_destroy_module(is_gimbal_module_mandatory_, gimbal_module_,
                           gimbal_thread_);
-  stop_and_destroy_module(is_liveview_module_mandatory_, liveview_module_,
-                          liveview_thread_);
+  // stop_and_destroy_module(is_liveview_module_mandatory_, liveview_module_,
+  //                         liveview_thread_);
   stop_and_destroy_module(is_hms_module_mandatory_, hms_module_, hms_thread_);
   stop_and_destroy_module(is_perception_module_mandatory_, perception_module_,
                           perception_thread_);
@@ -786,7 +786,7 @@ PSDKWrapper::initialize_psdk_modules()
   if (!initialize_module(is_telemetry_module_mandatory_, telemetry_module_) ||
       !initialize_module(is_camera_module_mandatory_, camera_module_) ||
       !initialize_module(is_gimbal_module_mandatory_, gimbal_module_) ||
-      !initialize_module(is_liveview_module_mandatory_, liveview_module_) ||
+      // !initialize_module(is_liveview_module_mandatory_, liveview_module_) ||
       !initialize_module(is_hms_module_mandatory_, hms_module_) ||
       !initialize_module(is_perception_module_mandatory_, perception_module_))
   {
@@ -888,7 +888,7 @@ PSDKWrapper::transition_modules_to_state(LifecycleState state)
   transition_if_mandatory(is_flight_control_module_mandatory_,
                           flight_control_module_);
   transition_if_mandatory(is_camera_module_mandatory_, camera_module_);
-  transition_if_mandatory(is_liveview_module_mandatory_, liveview_module_);
+  // transition_if_mandatory(is_liveview_module_mandatory_, liveview_module_);
   transition_if_mandatory(is_gimbal_module_mandatory_, gimbal_module_);
   transition_if_mandatory(is_hms_module_mandatory_, hms_module_);
   transition_if_mandatory(is_perception_module_mandatory_, perception_module_);
