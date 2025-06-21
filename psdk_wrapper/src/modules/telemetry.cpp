@@ -361,7 +361,7 @@ dji_console_print(const uint8_t *data, uint16_t dataLen)
 
 static T_DjiLoggerConsole dji_console = {
     dji_console_print,
-    DJI_LOGGER_CONSOLE_LOG_LEVEL_DEBUG,
+    DJI_LOGGER_CONSOLE_LOG_LEVEL_INFO,
     false};
 
 bool
