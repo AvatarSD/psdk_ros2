@@ -2327,18 +2327,18 @@ TelemetryModule::subscribe_psdk_topics()
                    "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_DISPLAYMODE, error %ld",
                    return_code);
     }
-    return_code = DjiFcSubscription_SubscribeTopic(
-        DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR,
-        get_frequency(params_.flight_status_frequency),
-        c_landing_gear_status_callback);
+    // return_code = DjiFcSubscription_SubscribeTopic(
+    //     DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR,
+    //     get_frequency(params_.flight_status_frequency),
+    //     c_landing_gear_status_callback);
 
-    if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
-    {
-      RCLCPP_ERROR(get_logger(),
-                   "Could not subscribe successfully to topic "
-                   "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR, error %ld",
-                   return_code);
-    }
+    // if (return_code != DJI_ERROR_SYSTEM_MODULE_CODE_SUCCESS)
+    // {
+    //   RCLCPP_ERROR(get_logger(),
+    //                "Could not subscribe successfully to topic "
+    //                "DJI_FC_SUBSCRIPTION_TOPIC_STATUS_LANDINGGEAR, error %ld",
+    //                return_code);
+    // }
 
     return_code = DjiFcSubscription_SubscribeTopic(
         DJI_FC_SUBSCRIPTION_TOPIC_STATUS_MOTOR_START_ERROR,
